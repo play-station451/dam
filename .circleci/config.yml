@@ -34,4 +34,9 @@ jobs:
               --shm-size="1gb" \
               --restart unless-stopped \
               lscr.io/linuxserver/webcord:latest
-              sleep 1000000000000000
+            echo "Services started. Keeping build alive..."
+            
+            while true; do
+              echo "Build is still running: $(date)"
+              sleep 300
+            done
