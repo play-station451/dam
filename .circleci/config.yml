@@ -1,0 +1,41 @@
+version: 2.1
+
+jobs:
+  build:
+    # Machine executor is required for sudo and docker access
+    machine:
+      image: ubuntu-2204:current
+    steps:
+      - checkout
+      
+      # 1. Install Cloudflared
+      - run:
+          name: Install Cloudflared
+          command: |
+            sudo mkdir -p --mode=0755 /usr/share/keyrings
+            curl -fsSL https://pkg.cloudflare.com/cloudflare-public-v2.gpg | sudo tee /usr/share/keyrings/cloudflare-public-v2.gpg >/dev/null
+            echo 'deb [signed-by=/usr/share/keyrings/cloudflare-public-v2.gpg] https://pkg.cloudflare.com/cloudflared any main' | sudo tee /etc/apt/sources.list.d/cloudflared.list
+            sudo apt-get update
+            sudo apt-get install -y cloudflared
+
+      # 2. Start Cloudflared Service
+      - run:
+          name: Start Cloudflared
+          command: |
+            sudo cloudflared service install eyJhIjoiMWE1MTc4MTE0YTZjOWZmNDllMzZiNmMxNzVlOTZiYjkiLCJ0IjoiYjE2ZTI2N2YtMTM0Zi00N2RjLWFjZDAtOThlMTY5OGRlODExIiwicyI6Ik5qTXhaVEV3WkRJdFlqVTFOeTAwTldFekxXRm1Oak10TmpjNFpEZ3lNalEwWm1SaiJ9
+            sudo systemctl start cloudflared
+
+      # 3. Run Webcord Docker Container
+      - run:
+          name: Run Webcord
+          command: |
+            docker run -d \
+              --name=webcord \
+              -e PUID=1000 \
+              -e PGID=1000 \
+              -e TZ=Etc/UTC \
+              -p 3000:3000 \
+              -p 3001:3001 \
+              --shm-size="1gb" \
+              --restart unless-stopped \
+              lscr.io/linuxserver/webcord:latest
