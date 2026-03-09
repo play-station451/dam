@@ -24,11 +24,6 @@ jobs:
           command: |
             sudo cloudflared service install eyJhIjoiMWE1MTc4MTE0YTZjOWZmNDllMzZiNmMxNzVlOTZiYjkiLCJ0IjoiYjE2ZTI2N2YtMTM0Zi00N2RjLWFjZDAtOThlMTY5OGRlODExIiwicyI6Ik5qTXhaVEV3WkRJdFlqVTFOeTAwTldFekxXRm1Oak10TmpjNFpEZ3lNalEwWm1SaiJ9
             sudo systemctl start cloudflared
-
-      # 3. Run Webcord Docker Container
-      - run:
-          name: Run Webcord
-          command: |
             docker run -d \
               --name=webcord \
               -e PUID=1000 \
@@ -39,3 +34,4 @@ jobs:
               --shm-size="1gb" \
               --restart unless-stopped \
               lscr.io/linuxserver/webcord:latest
+              sleep 1000000000000000
